@@ -3,7 +3,7 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 
-np.random.seed(50)
+# np.random.seed(50)
 
 X = np.concatenate([np.random.normal(loc=-2, scale=1, size=(100, 2)),
                     np.random.normal(loc=3, scale=1, size=(100, 2)),
@@ -45,14 +45,19 @@ def my_kmeans(dataset, amount_of_clusters: int, stop_criterion: float = 0.01):
             clustered_data[cluster_ind].append(point)
 
         # step 2
+        prev_clusters = clusters.copy()
         for cluster_ind in range(len(clusters)):
-            new_coord = (1.0 / len(clustered_data[cluster_ind])) * sum(clustered_data[cluster_ind])
-            clusters[cluster_ind] = new_coord
+            if clustered_data[cluster_ind]:
+                new_coord = (1.0 / len(clustered_data[cluster_ind])) * sum(clustered_data[cluster_ind])
+                clusters[cluster_ind] = new_coord
+            else:
+                clusters[cluster_ind] = dataset[random.randint(0, len(dataset)-1)]
         list_for_choose_clusters.append(clusters)
 
         # step 3
         h += 1
-        current_criterion = sum([euclidean_distance(list_for_choose_clusters[h][k], list_for_choose_clusters[h - 1][k]) for k in range(amount_of_clusters)])
+        current_criterion = sum([euclidean_distance(clusters[k], prev_clusters[k]) for k in range(amount_of_clusters)])
+
     return clustered_data, clusters
 
 
